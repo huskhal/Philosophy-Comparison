@@ -42,7 +42,6 @@ header h1 {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 400;
   font-size: clamp(1.5rem, 5vw, 2rem);
-  letter-spacing: 0.02em;
   color: var(--text);
   margin-bottom: 0.4rem;
 }
@@ -52,6 +51,18 @@ header p {
   font-size: 1rem;
   color: var(--gold-dim);
 }
+header .take-quiz {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 8px 20px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 100px;
+  color: var(--gold);
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+header .take-quiz:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); }
 
 .separator {
   height: 1px;
@@ -93,7 +104,22 @@ header p {
   font-size: 10px; font-weight: 500;
   letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--gold); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
 }
+.info-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 1px solid var(--text-dim);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 10px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1; padding: 0;
+  flex-shrink: 0;
+}
+.info-btn:hover, .info-btn.active { border-color: var(--gold); color: var(--gold); }
+
 .cat-poles {
   display: flex; justify-content: space-between;
   font-family: 'Cormorant Garamond', serif;
@@ -151,6 +177,61 @@ header p {
 .track-label .tl-name { color: var(--text-muted); }
 @media (max-width: 480px) { .track-labels { display: flex; } }
 
+/* Definitions panel */
+.def-panel {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease, margin 0.35s ease, opacity 0.25s ease;
+  opacity: 0;
+  margin-top: 0;
+}
+.def-panel.open {
+  max-height: 500px;
+  opacity: 1;
+  margin-top: 8px;
+}
+.def-inner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.def-row {
+  margin-bottom: 12px;
+}
+.def-row:last-child { margin-bottom: 0; }
+.def-term {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.def-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+.def-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--gold-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.def-link:hover { color: var(--gold); }
+.def-link::after { content: ' \u2192'; }
+.def-vs {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin: 6px 0;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Stats */
 .stats-block {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -215,6 +296,7 @@ footer p {
   font-style: italic; font-size: 13px; color: var(--text-dim);
 }
 footer a { color: var(--gold-dim); text-decoration: none; }
+footer a:hover { color: var(--gold); }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(12px); }
@@ -235,6 +317,7 @@ footer a { color: var(--gold-dim); text-decoration: none; }
   <header>
     <h1>Philosophical Profile Comparison</h1>
     <p>how you actually think</p>
+    <a class="take-quiz" href="https://diagnostic.millermanschool.com" target="_blank" rel="noopener">Take the quiz yourself</a>
   </header>
   <div class="controls" id="controls"></div>
   <div class="separator"></div>
@@ -255,6 +338,7 @@ const people = {
 };
 
 const catKeys = ['metaphysics','politics','epistemology','technology','human_nature'];
+
 const categories = [
   { key: 'metaphysics', name: 'Metaphysics', left: 'Platonist', right: 'Nietzschean' },
   { key: 'politics', name: 'Politics', left: 'Classical', right: 'Liberal' },
@@ -263,9 +347,83 @@ const categories = [
   { key: 'human_nature', name: 'Human nature', left: 'Aristotelian', right: 'Existentialist' }
 ];
 
+const definitions = {
+  metaphysics: {
+    left: {
+      term: 'Platonist',
+      text: 'There\'s a fixed, higher reality beyond what we can see or touch \u2014 eternal truths, objective moral order, a "way things really are" that doesn\'t depend on human opinion.',
+      link: 'https://plato.stanford.edu/entries/plato-metaphysics/',
+      linkLabel: 'Stanford Encyclopedia: Plato\'s metaphysics'
+    },
+    right: {
+      term: 'Nietzschean',
+      text: 'There is no pre-given order or objective truth. "Reality" is something we impose through our will, creativity, and power. Values are made, not found.',
+      link: 'https://plato.stanford.edu/entries/nietzsche/',
+      linkLabel: 'Stanford Encyclopedia: Nietzsche'
+    }
+  },
+  politics: {
+    left: {
+      term: 'Classical',
+      text: 'Politics should be grounded in virtue, duty, and natural hierarchy. The purpose of the state is to cultivate good character, not just protect individual rights.',
+      link: 'https://plato.stanford.edu/entries/aristotle-politics/',
+      linkLabel: 'Stanford Encyclopedia: Aristotle\'s politics'
+    },
+    right: {
+      term: 'Liberal',
+      text: 'Individual freedom and equal rights come first. Government exists to protect personal liberty, and people should be free to define the good life for themselves.',
+      link: 'https://plato.stanford.edu/entries/liberalism/',
+      linkLabel: 'Stanford Encyclopedia: Liberalism'
+    }
+  },
+  epistemology: {
+    left: {
+      term: 'Straussian',
+      text: 'The deepest truths are often hidden. Great thinkers wrote between the lines because some knowledge is dangerous or misunderstood by the public. Careful, close reading reveals what\'s really being said.',
+      link: 'https://plato.stanford.edu/entries/strauss-leo/',
+      linkLabel: 'Stanford Encyclopedia: Leo Strauss'
+    },
+    right: {
+      term: 'Hegelian',
+      text: 'Truth unfolds through history as a process of contradiction and resolution. No single perspective is complete \u2014 understanding grows as opposing ideas clash and synthesize over time.',
+      link: 'https://plato.stanford.edu/entries/hegel/',
+      linkLabel: 'Stanford Encyclopedia: Hegel'
+    }
+  },
+  technology: {
+    left: {
+      term: 'Heideggerian',
+      text: 'Technology isn\'t neutral \u2014 it reshapes how we see the world, turning everything (including people) into resources to be optimized. We should be deeply cautious about what we lose in the process.',
+      link: 'https://plato.stanford.edu/entries/heidegger/',
+      linkLabel: 'Stanford Encyclopedia: Heidegger'
+    },
+    right: {
+      term: 'Promethean',
+      text: 'Technology is humanity\'s greatest tool for liberation. Like Prometheus bringing fire to mortals, our power to build and innovate is what makes us free and defines human progress.',
+      link: 'https://en.wikipedia.org/wiki/Prometheanism',
+      linkLabel: 'Wikipedia: Prometheanism'
+    }
+  },
+  human_nature: {
+    left: {
+      term: 'Aristotelian',
+      text: 'Humans have a fixed nature with a built-in purpose. Flourishing means developing your natural capacities \u2014 reason, virtue, community \u2014 toward a definite idea of the good life.',
+      link: 'https://plato.stanford.edu/entries/aristotle-ethics/',
+      linkLabel: 'Stanford Encyclopedia: Aristotle\'s ethics'
+    },
+    right: {
+      term: 'Existentialist',
+      text: 'There is no preset human nature. You are what you make of yourself. Existence comes before essence \u2014 meaning isn\'t given, it\'s created through your choices and commitments.',
+      link: 'https://plato.stanford.edu/entries/existentialism/',
+      linkLabel: 'Stanford Encyclopedia: Existentialism'
+    }
+  }
+};
+
 const names = Object.keys(people);
 const active = new Set(names);
 let touchedMarker = null;
+const openPanels = new Set();
 
 function pairDist(a, b) {
   let sum = 0;
@@ -310,17 +468,48 @@ function render() {
     const anyLeft = activePoles.some(v => v < 40);
     const anyRight = activePoles.some(v => v > 60);
 
+    const def = definitions[cat.key];
+    const panelId = 'def-' + cat.key;
+    const isOpen = openPanels.has(cat.key);
+
     const div = document.createElement('div');
     div.className = 'category';
     div.innerHTML =
-      '<div class="cat-label">' + cat.name + '</div>' +
+      '<div class="cat-label">' + cat.name +
+        '<button class="info-btn' + (isOpen ? ' active' : '') + '" data-cat="' + cat.key + '" aria-label="Show definitions">?</button>' +
+      '</div>' +
       '<div class="cat-poles">' +
         '<span class="pole' + (anyLeft ? ' bold' : '') + '">' + cat.left + '</span>' +
         '<span class="pole' + (anyRight ? ' bold' : '') + '">' + cat.right + '</span>' +
       '</div>' +
       '<div class="track-wrap"><div class="track-line"></div></div>' +
-      '<div class="track-labels"></div>';
+      '<div class="track-labels"></div>' +
+      '<div class="def-panel' + (isOpen ? ' open' : '') + '" id="' + panelId + '">' +
+        '<div class="def-inner">' +
+          '<div class="def-row">' +
+            '<div class="def-term">' + def.left.term + '</div>' +
+            '<div class="def-text">' + def.left.text + '</div>' +
+            '<a class="def-link" href="' + def.left.link + '" target="_blank" rel="noopener">' + def.left.linkLabel + '</a>' +
+          '</div>' +
+          '<div class="def-vs">vs</div>' +
+          '<div class="def-row">' +
+            '<div class="def-term">' + def.right.term + '</div>' +
+            '<div class="def-text">' + def.right.text + '</div>' +
+            '<a class="def-link" href="' + def.right.link + '" target="_blank" rel="noopener">' + def.right.linkLabel + '</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
     catEl.appendChild(div);
+
+    // Info button toggle
+    div.querySelector('.info-btn').addEventListener('click', function() {
+      const key = this.dataset.cat;
+      if (openPanels.has(key)) openPanels.delete(key); else openPanels.add(key);
+      const panel = document.getElementById('def-' + key);
+      panel.classList.toggle('open');
+      this.classList.toggle('active');
+    });
 
     const track = div.querySelector('.track-wrap');
     const labelsRow = div.querySelector('.track-labels');
