@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Philosophical Profile Comparison</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0e0e0e;
+  --surface: #161616;
+  --surface-raised: #1c1c1c;
+  --gold: #c9a84c;
+  --gold-dim: #8a7234;
+  --text: #e8e4db;
+  --text-muted: #8a8680;
+  --text-dim: #5a5750;
+  --border: rgba(201,168,76,0.12);
+  --border-hover: rgba(201,168,76,0.3);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3rem;
+}
+@media (max-width: 400px) { .page { padding: 1.75rem 0.875rem 2.5rem; } }
+
+header { text-align: center; margin-bottom: 2.5rem; }
+header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  letter-spacing: 0.02em;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+header p {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--gold-dim);
+}
+
+.separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  margin: 1.75rem 0;
+}
+
+.controls {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  margin-bottom: 2rem;
+}
+.person-btn {
+  padding: 8px 16px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-muted);
+  -webkit-user-select: none; user-select: none;
+  touch-action: manipulation;
+}
+.person-btn.active {
+  border-color: var(--person-color);
+  color: var(--person-color);
+  background: rgba(255,255,255,0.03);
+}
+.person-btn .dot {
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; margin-right: 6px;
+  vertical-align: middle; opacity: 0.4; transition: opacity 0.2s;
+}
+.person-btn.active .dot { opacity: 1; }
+
+.category { margin-bottom: 1.75rem; }
+.cat-label {
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 8px;
+}
+.cat-poles {
+  display: flex; justify-content: space-between;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; margin-bottom: 4px;
+}
+.pole { color: var(--text-dim); transition: color 0.2s; }
+.pole.bold { color: var(--text); font-weight: 600; }
+
+.track-wrap {
+  position: relative; height: 36px;
+  display: flex; align-items: center;
+}
+.track-line {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--gold-dim), var(--text-dim));
+  opacity: 0.25; border-radius: 1px;
+}
+.marker {
+  position: absolute;
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2.5px solid;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: default; z-index: 2;
+}
+.marker.hidden {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  pointer-events: none;
+}
+.marker .tip {
+  position: absolute;
+  bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-hover);
+  border-radius: 6px; padding: 5px 10px;
+  font-size: 12px; white-space: nowrap;
+  opacity: 0; transition: opacity 0.15s;
+  pointer-events: none; color: var(--text); z-index: 20;
+}
+.marker:hover .tip, .marker.touched .tip { opacity: 1; }
+.marker .tip.nudge-right { left: 0; transform: none; }
+.marker .tip.nudge-left { left: auto; right: 0; transform: none; }
+
+.track-labels {
+  display: none; flex-wrap: wrap;
+  gap: 3px 10px; margin-top: 2px; padding-left: 2px;
+}
+.track-label {
+  font-size: 11px; display: flex; align-items: center; gap: 4px;
+}
+.track-label .tl-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.track-label .tl-name { color: var(--text-muted); }
+@media (max-width: 480px) { .track-labels { display: flex; } }
+
+.stats-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-top: 0.5rem;
+}
+.stats-title {
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 14px;
+}
+.pair-row {
+  display: flex; align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px; gap: 8px;
+}
+.pair-row:last-of-type { border-bottom: none; }
+.pair-names {
+  font-weight: 500; color: var(--text);
+  white-space: nowrap; flex-shrink: 0;
+}
+.pair-bar-wrap {
+  flex: 1; height: 3px; border-radius: 2px;
+  background: rgba(255,255,255,0.06); min-width: 30px;
+}
+.pair-bar { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+.pair-score {
+  font-size: 12px; color: var(--text-muted);
+  white-space: nowrap; flex-shrink: 0;
+}
+
+.summary-cards { display: flex; gap: 10px; margin-top: 16px; }
+@media (max-width: 380px) { .summary-cards { flex-direction: column; } }
+
+.summary-card {
+  flex: 1; min-width: 0;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+}
+.summary-card-label {
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-dim); margin-bottom: 5px;
+}
+.summary-card-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px; font-weight: 500;
+  color: var(--text); margin-bottom: 2px;
+}
+.summary-card-sub { font-size: 11px; color: var(--text-dim); }
+.summary-card.best { border-color: rgba(78,201,160,0.25); }
+.summary-card.worst { border-color: rgba(224,75,74,0.2); }
+
+footer {
+  text-align: center; margin-top: 2.5rem;
+  padding-top: 1.5rem; border-top: 1px solid var(--border);
+}
+footer p {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-size: 13px; color: var(--text-dim);
+}
+footer a { color: var(--gold-dim); text-decoration: none; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.category { animation: fadeUp 0.4s ease both; }
+.category:nth-child(1) { animation-delay: 0.05s; }
+.category:nth-child(2) { animation-delay: 0.1s; }
+.category:nth-child(3) { animation-delay: 0.15s; }
+.category:nth-child(4) { animation-delay: 0.2s; }
+.category:nth-child(5) { animation-delay: 0.25s; }
+.stats-block { animation: fadeUp 0.4s ease 0.35s both; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <h1>Philosophical Profile Comparison</h1>
+    <p>how you actually think</p>
+  </header>
+  <div class="controls" id="controls"></div>
+  <div class="separator"></div>
+  <div id="categories"></div>
+  <div class="separator"></div>
+  <div class="stats-block" id="stats"></div>
+  <footer>
+    <p>Based on the <a href="https://diagnostic.millermanschool.com" target="_blank" rel="noopener">Millerman School diagnostic</a></p>
+  </footer>
+</div>
+
+<script>
+const people = {
+  Hussein: { color: '#9b8fd4', scores: { metaphysics: 28, politics: 38, epistemology: 78, technology: 12, human_nature: 80 } },
+  Ricardo: { color: '#4ec9a0', scores: { metaphysics: 48, politics: 55, epistemology: 75, technology: 78, human_nature: 60 } },
+  Bilal:   { color: '#e07a4f', scores: { metaphysics: 55, politics: 5, epistemology: 35, technology: 50, human_nature: 82 } },
+  Dalia:   { color: '#d96b8f', scores: { metaphysics: 65, politics: 55, epistemology: 38, technology: 12, human_nature: 12 } }
+};
+
+const catKeys = ['metaphysics','politics','epistemology','technology','human_nature'];
+const categories = [
+  { key: 'metaphysics', name: 'Metaphysics', left: 'Platonist', right: 'Nietzschean' },
+  { key: 'politics', name: 'Politics', left: 'Classical', right: 'Liberal' },
+  { key: 'epistemology', name: 'Epistemology', left: 'Straussian', right: 'Hegelian' },
+  { key: 'technology', name: 'Technology', left: 'Heideggerian', right: 'Promethean' },
+  { key: 'human_nature', name: 'Human nature', left: 'Aristotelian', right: 'Existentialist' }
+];
+
+const names = Object.keys(people);
+const active = new Set(names);
+let touchedMarker = null;
+
+function pairDist(a, b) {
+  let sum = 0;
+  catKeys.forEach(k => sum += Math.abs(people[a].scores[k] - people[b].scores[k]));
+  return sum;
+}
+
+function render() {
+  const controlsEl = document.getElementById('controls');
+  controlsEl.innerHTML = '';
+  names.forEach(name => {
+    const btn = document.createElement('button');
+    btn.className = 'person-btn' + (active.has(name) ? ' active' : '');
+    btn.style.setProperty('--person-color', people[name].color);
+    btn.innerHTML = '<span class="dot" style="background:' + people[name].color + '"></span>' + name;
+    btn.addEventListener('click', () => { active.has(name) ? active.delete(name) : active.add(name); render(); });
+    controlsEl.appendChild(btn);
+  });
+
+  const catEl = document.getElementById('categories');
+  catEl.innerHTML = '';
+
+  categories.forEach(cat => {
+    const activeNames = [...active];
+    const scores = activeNames.map(n => ({ name: n, val: people[n].scores[cat.key] }));
+    scores.sort((a, b) => a.val - b.val);
+
+    const THRESHOLD = 6;
+    const offsets = {};
+    for (let i = 0; i < scores.length; i++) {
+      let cluster = [scores[i]];
+      while (i + 1 < scores.length && Math.abs(scores[i + 1].val - scores[i].val) < THRESHOLD) { i++; cluster.push(scores[i]); }
+      if (cluster.length === 1) { offsets[cluster[0].name] = 0; }
+      else {
+        const step = 20;
+        const start = -step * (cluster.length - 1) / 2;
+        cluster.forEach((c, idx) => offsets[c.name] = start + idx * step);
+      }
+    }
+
+    const activePoles = activeNames.map(n => people[n].scores[cat.key]);
+    const anyLeft = activePoles.some(v => v < 40);
+    const anyRight = activePoles.some(v => v > 60);
+
+    const div = document.createElement('div');
+    div.className = 'category';
+    div.innerHTML =
+      '<div class="cat-label">' + cat.name + '</div>' +
+      '<div class="cat-poles">' +
+        '<span class="pole' + (anyLeft ? ' bold' : '') + '">' + cat.left + '</span>' +
+        '<span class="pole' + (anyRight ? ' bold' : '') + '">' + cat.right + '</span>' +
+      '</div>' +
+      '<div class="track-wrap"><div class="track-line"></div></div>' +
+      '<div class="track-labels"></div>';
+    catEl.appendChild(div);
+
+    const track = div.querySelector('.track-wrap');
+    const labelsRow = div.querySelector('.track-labels');
+
+    names.forEach(name => {
+      const data = people[name];
+      const isActive = active.has(name);
+      const m = document.createElement('div');
+      m.className = 'marker' + (isActive ? '' : ' hidden');
+      m.style.left = data.scores[cat.key] + '%';
+      m.style.background = data.color;
+      m.style.borderColor = data.color;
+      const yOff = isActive ? (offsets[name] || 0) : 0;
+      m.style.transform = 'translate(-50%, calc(-50% + ' + yOff + 'px))';
+
+      const leanLabel = data.scores[cat.key] < 40 ? cat.left : data.scores[cat.key] > 60 ? cat.right : 'Center';
+      const tip = document.createElement('div');
+      tip.className = 'tip';
+      tip.textContent = name + ' \u2014 ' + leanLabel;
+      const pct = data.scores[cat.key];
+      if (pct < 15) tip.classList.add('nudge-right');
+      else if (pct > 85) tip.classList.add('nudge-left');
+      m.appendChild(tip);
+
+      m.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (touchedMarker && touchedMarker !== m) touchedMarker.classList.remove('touched');
+        m.classList.toggle('touched');
+        touchedMarker = m.classList.contains('touched') ? m : null;
+      }, { passive: false });
+
+      track.appendChild(m);
+
+      if (isActive) {
+        const lbl = document.createElement('div');
+        lbl.className = 'track-label';
+        lbl.innerHTML = '<span class="tl-dot" style="background:' + data.color + '"></span><span class="tl-name">' + name + ': ' + leanLabel + '</span>';
+        labelsRow.appendChild(lbl);
+      }
+    });
+  });
+
+  renderStats();
+}
+
+document.addEventListener('touchstart', function(e) {
+  if (touchedMarker && !touchedMarker.contains(e.target)) {
+    touchedMarker.classList.remove('touched');
+    touchedMarker = null;
+  }
+});
+
+function renderStats() {
+  const el = document.getElementById('stats');
+  const activeNames = [...active];
+  if (activeNames.length < 2) {
+    el.innerHTML = '<div class="stats-title">Compatibility</div><div style="font-size:13px;color:var(--text-dim);">Select at least 2 people.</div>';
+    return;
+  }
+
+  const pairs = [];
+  for (let i = 0; i < activeNames.length; i++)
+    for (let j = i + 1; j < activeNames.length; j++)
+      pairs.push({ a: activeNames[i], b: activeNames[j], dist: pairDist(activeNames[i], activeNames[j]) });
+  pairs.sort((x, y) => x.dist - y.dist);
+
+  const best = pairs[0], worst = pairs[pairs.length - 1];
+
+  function catExtremes(a, b) {
+    let maxD = 0, maxC = '', minD = 999, minC = '';
+    categories.forEach(c => {
+      const d = Math.abs(people[a].scores[c.key] - people[b].scores[c.key]);
+      if (d > maxD) { maxD = d; maxC = c.name; }
+      if (d < minD) { minD = d; minC = c.name; }
+    });
+    return { diverge: maxC, align: minC };
+  }
+
+  let html = '<div class="stats-title">Compatibility ranking</div>';
+  pairs.forEach(p => {
+    const compat = Math.round(100 - (p.dist / 500) * 100);
+    const barColor = compat > 70 ? '#4ec9a0' : compat > 45 ? '#c9a84c' : '#e24b4a';
+    html += '<div class="pair-row">' +
+      '<span class="pair-names">' + p.a + ' & ' + p.b + '</span>' +
+      '<div class="pair-bar-wrap"><div class="pair-bar" style="width:' + compat + '%;background:' + barColor + ';"></div></div>' +
+      '<span class="pair-score">' + compat + '%</span></div>';
+  });
+
+  const bestEx = catExtremes(best.a, best.b);
+  const worstEx = catExtremes(worst.a, worst.b);
+
+  html += '<div class="summary-cards">' +
+    '<div class="summary-card best"><div class="summary-card-label">Most compatible</div>' +
+    '<div class="summary-card-val">' + best.a + ' & ' + best.b + '</div>' +
+    '<div class="summary-card-sub">Closest on ' + bestEx.align + '</div></div>' +
+    '<div class="summary-card worst"><div class="summary-card-label">Most opposed</div>' +
+    '<div class="summary-card-val">' + worst.a + ' & ' + worst.b + '</div>' +
+    '<div class="summary-card-sub">Diverge on ' + worstEx.diverge + '</div></div></div>';
+
+  el.innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>
