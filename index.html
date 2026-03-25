@@ -7,610 +7,494 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
 :root {
-  --bg: #0e0e0e;
-  --surface: #161616;
-  --surface-raised: #1c1c1c;
-  --gold: #c9a84c;
-  --gold-dim: #8a7234;
-  --text: #e8e4db;
-  --text-muted: #8a8680;
-  --text-dim: #5a5750;
-  --border: rgba(201,168,76,0.12);
-  --border-hover: rgba(201,168,76,0.3);
+  --bg: #0e0e0e; --surface: #141414; --surface-raised: #1a1a1a;
+  --gold: #c9a84c; --gold-dim: #8a7234;
+  --text: #e8e4db; --text-muted: #8a8680; --text-dim: #5a5750;
+  --border: rgba(201,168,76,0.12); --border-hover: rgba(201,168,76,0.3);
 }
-
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg); color: var(--text);
   font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
-
-.page {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 2.5rem 1.25rem 3rem;
-}
+.page { max-width: 660px; margin: 0 auto; padding: 2.5rem 1.25rem 3rem; }
 @media (max-width: 400px) { .page { padding: 1.75rem 0.875rem 2.5rem; } }
 
-header { text-align: center; margin-bottom: 2.5rem; }
+header { text-align: center; margin-bottom: 2rem; }
 header h1 {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 400;
-  font-size: clamp(1.5rem, 5vw, 2rem);
-  color: var(--text);
-  margin-bottom: 0.4rem;
+  font-family: 'Cormorant Garamond', serif; font-weight: 400;
+  font-size: clamp(1.4rem, 5vw, 2rem); color: var(--text); margin-bottom: 0.35rem;
 }
-header p {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: 1rem;
-  color: var(--gold-dim);
+header .sub {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 0.95rem; color: var(--gold-dim);
 }
 header .take-quiz {
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 8px 20px;
-  border: 1px solid var(--gold-dim);
-  border-radius: 100px;
-  color: var(--gold);
-  font-size: 13px;
-  text-decoration: none;
-  transition: all 0.2s;
+  display: inline-block; margin-top: 0.9rem; padding: 7px 18px;
+  border: 1px solid var(--gold-dim); border-radius: 100px;
+  color: var(--gold); font-size: 12px; text-decoration: none; transition: all 0.2s;
 }
 header .take-quiz:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); }
 
-.separator {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-  margin: 1.75rem 0;
+.sep { height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); margin: 1.5rem 0; }
+
+/* Section titles */
+.section-title {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 14px;
 }
 
-.controls {
-  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
-  margin-bottom: 2rem;
+/* Controls */
+.controls { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 1.75rem; }
+.pbtn {
+  padding: 6px 12px; border-radius: 100px;
+  border: 1px solid var(--border); background: transparent;
+  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; color: var(--text-muted);
+  -webkit-user-select: none; user-select: none; touch-action: manipulation;
 }
-.person-btn {
-  padding: 8px 16px;
-  border-radius: 100px;
-  border: 1px solid var(--border);
-  background: transparent;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px; font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--text-muted);
-  -webkit-user-select: none; user-select: none;
-  touch-action: manipulation;
+.pbtn.active { border-color: var(--pc); color: var(--pc); background: rgba(255,255,255,0.03); }
+.pbtn .d {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 5px; vertical-align: middle; opacity: 0.4; transition: opacity 0.2s;
 }
-.person-btn.active {
-  border-color: var(--person-color);
-  color: var(--person-color);
-  background: rgba(255,255,255,0.03);
-}
-.person-btn .dot {
-  display: inline-block; width: 8px; height: 8px;
-  border-radius: 50%; margin-right: 6px;
-  vertical-align: middle; opacity: 0.4; transition: opacity 0.2s;
-}
-.person-btn.active .dot { opacity: 1; }
+.pbtn.active .d { opacity: 1; }
 
-.category { margin-bottom: 1.75rem; }
+/* View toggle */
+.view-toggle { display: flex; justify-content: center; gap: 0; margin-bottom: 1.5rem; }
+.vtab {
+  padding: 6px 16px; font-size: 11px; font-weight: 500;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-dim); cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif; letter-spacing: 0.04em;
+}
+.vtab:first-child { border-radius: 6px 0 0 6px; }
+.vtab:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+.vtab.active { background: rgba(201,168,76,0.1); color: var(--gold); border-color: var(--gold-dim); }
+
+/* === TRACKS VIEW === */
+.category { margin-bottom: 1.5rem; }
 .cat-label {
-  font-size: 10px; font-weight: 500;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 8px;
+  font-size: 10px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
   display: flex; align-items: center; gap: 8px;
 }
-.info-btn {
+.ibtn {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 16px; height: 16px; border-radius: 50%;
-  border: 1px solid var(--text-dim);
-  background: transparent;
-  color: var(--text-dim);
-  font-size: 10px; font-weight: 500;
-  cursor: pointer; transition: all 0.2s;
-  font-family: 'DM Sans', sans-serif;
-  line-height: 1; padding: 0;
-  flex-shrink: 0;
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 1px solid var(--text-dim); background: transparent;
+  color: var(--text-dim); font-size: 9px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+  line-height: 1; padding: 0; flex-shrink: 0;
 }
-.info-btn:hover, .info-btn.active { border-color: var(--gold); color: var(--gold); }
-
+.ibtn:hover, .ibtn.active { border-color: var(--gold); color: var(--gold); }
 .cat-poles {
   display: flex; justify-content: space-between;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 15px; margin-bottom: 4px;
+  font-family: 'Cormorant Garamond', serif; font-size: 14px; margin-bottom: 3px;
 }
 .pole { color: var(--text-dim); transition: color 0.2s; }
 .pole.bold { color: var(--text); font-weight: 600; }
-
-.track-wrap {
-  position: relative; height: 36px;
-  display: flex; align-items: center;
-}
-.track-line {
+.tw { position: relative; height: 36px; display: flex; align-items: center; }
+.tl {
   position: absolute; left: 0; right: 0; height: 2px;
   background: linear-gradient(90deg, var(--gold-dim), var(--text-dim));
-  opacity: 0.25; border-radius: 1px;
+  opacity: 0.2; border-radius: 1px;
 }
-.marker {
-  position: absolute;
-  width: 18px; height: 18px; border-radius: 50%;
-  border: 2.5px solid;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+.mk {
+  position: absolute; width: 16px; height: 16px; border-radius: 50%;
+  border: 2.5px solid; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
   cursor: default; z-index: 2;
 }
-.marker.hidden {
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0);
-  pointer-events: none;
+.mk.hid { opacity: 0; transform: translate(-50%,-50%) scale(0); pointer-events: none; }
+.mk .tp {
+  position: absolute; bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%);
+  background: var(--surface-raised); border: 1px solid var(--border-hover);
+  border-radius: 5px; padding: 4px 8px; font-size: 11px; white-space: nowrap;
+  opacity: 0; transition: opacity 0.15s; pointer-events: none;
+  color: var(--text); z-index: 20;
 }
-.marker .tip {
-  position: absolute;
-  bottom: calc(100% + 8px); left: 50%;
-  transform: translateX(-50%);
-  background: var(--surface-raised);
-  border: 1px solid var(--border-hover);
-  border-radius: 6px; padding: 5px 10px;
-  font-size: 12px; white-space: nowrap;
-  opacity: 0; transition: opacity 0.15s;
-  pointer-events: none; color: var(--text); z-index: 20;
-}
-.marker:hover .tip, .marker.touched .tip { opacity: 1; }
-.marker .tip.nudge-right { left: 0; transform: none; }
-.marker .tip.nudge-left { left: auto; right: 0; transform: none; }
+.mk:hover .tp, .mk.touched .tp { opacity: 1; }
+.tp.nr { left: 0; transform: none; }
+.tp.nl { left: auto; right: 0; transform: none; }
 
-.track-labels {
-  display: none; flex-wrap: wrap;
-  gap: 3px 10px; margin-top: 2px; padding-left: 2px;
-}
-.track-label {
-  font-size: 11px; display: flex; align-items: center; gap: 4px;
-}
-.track-label .tl-dot {
-  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
-}
-.track-label .tl-name { color: var(--text-muted); }
-@media (max-width: 480px) { .track-labels { display: flex; } }
+.tlabels { display: none; flex-wrap: wrap; gap: 2px 8px; margin-top: 1px; }
+.tlbl { font-size: 10px; display: flex; align-items: center; gap: 3px; }
+.tlbl .td { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.tlbl span { color: var(--text-muted); }
+@media (max-width: 520px) { .tlabels { display: flex; } }
 
-/* Definitions panel */
-.def-panel {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.35s ease, margin 0.35s ease, opacity 0.25s ease;
-  opacity: 0;
-  margin-top: 0;
+/* Definitions */
+.dp { overflow: hidden; max-height: 0; transition: max-height 0.35s ease, opacity 0.25s ease; opacity: 0; margin-top: 0; }
+.dp.open { max-height: 500px; opacity: 1; margin-top: 6px; }
+.di {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px;
 }
-.def-panel.open {
-  max-height: 500px;
-  opacity: 1;
-  margin-top: 8px;
-}
-.def-inner {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 16px;
-}
-.def-row {
-  margin-bottom: 12px;
-}
-.def-row:last-child { margin-bottom: 0; }
-.def-term {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 3px;
-}
-.def-text {
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--text-muted);
-}
-.def-link {
-  display: inline-block;
-  margin-top: 4px;
-  font-size: 11px;
-  color: var(--gold-dim);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.def-link:hover { color: var(--gold); }
-.def-link::after { content: ' \u2192'; }
-.def-vs {
-  text-align: center;
-  font-size: 11px;
-  color: var(--text-dim);
-  margin: 6px 0;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
+.dr { margin-bottom: 10px; }
+.dr:last-child { margin-bottom: 0; }
+.dt { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.dd { font-size: 12px; line-height: 1.5; color: var(--text-muted); }
+.dl { display: inline-block; margin-top: 3px; font-size: 10px; color: var(--gold-dim); text-decoration: none; transition: color 0.2s; }
+.dl:hover { color: var(--gold); }
+.dl::after { content: ' \2192'; }
+.dvs { text-align: center; font-size: 10px; color: var(--text-dim); margin: 5px 0; letter-spacing: 0.1em; text-transform: uppercase; }
 
-/* Stats */
-.stats-block {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.25rem;
-  margin-top: 0.5rem;
+/* === TABLE VIEW === */
+.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -0.25rem; padding: 0 0.25rem; }
+.tbl {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+  min-width: 500px;
 }
-.stats-title {
-  font-size: 10px; font-weight: 500;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 14px;
+.tbl th {
+  text-align: left; padding: 8px 6px; font-weight: 500; font-size: 10px;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold);
+  border-bottom: 1px solid var(--border-hover); white-space: nowrap;
 }
-.pair-row {
-  display: flex; align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px; gap: 8px;
+.tbl td {
+  padding: 7px 6px; border-bottom: 1px solid var(--border);
+  color: var(--text-muted); white-space: nowrap;
 }
-.pair-row:last-of-type { border-bottom: none; }
-.pair-names {
-  font-weight: 500; color: var(--text);
-  white-space: nowrap; flex-shrink: 0;
-}
-.pair-bar-wrap {
-  flex: 1; height: 3px; border-radius: 2px;
-  background: rgba(255,255,255,0.06); min-width: 30px;
-}
-.pair-bar { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
-.pair-score {
-  font-size: 12px; color: var(--text-muted);
-  white-space: nowrap; flex-shrink: 0;
-}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl .name-cell { font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 5px; }
+.tbl .name-cell .cd { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.tbl .lean { font-size: 11px; }
+.lean-strong { color: var(--text); font-weight: 500; }
+.lean-mod { color: var(--text-muted); }
+.lean-center { color: var(--text-dim); font-style: italic; }
 
-.summary-cards { display: flex; gap: 10px; margin-top: 16px; }
-@media (max-width: 380px) { .summary-cards { flex-direction: column; } }
+/* === STATS === */
+.stats {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1rem 1.15rem; margin-top: 0.5rem;
+}
+.pr {
+  display: flex; align-items: center; padding: 8px 0;
+  border-bottom: 1px solid var(--border); font-size: 12px; gap: 6px;
+  cursor: pointer; transition: background 0.15s;
+}
+.pr:last-of-type { border-bottom: none; }
+.pr:hover { background: rgba(255,255,255,0.015); }
+.pn { font-weight: 500; color: var(--text); white-space: nowrap; flex-shrink: 0; min-width: 110px; }
+@media (max-width: 400px) { .pn { min-width: 90px; font-size: 11px; } }
+.pbw { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.06); min-width: 20px; }
+.pb { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+.ps { font-size: 11px; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
 
-.summary-card {
-  flex: 1; min-width: 0;
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  border-radius: 10px; padding: 12px 14px;
+/* Expanded pair detail */
+.pair-detail {
+  overflow: hidden; max-height: 0; opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
 }
-.summary-card-label {
-  font-size: 10px; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--text-dim); margin-bottom: 5px;
+.pair-detail.open { max-height: 300px; opacity: 1; }
+.pd-inner {
+  padding: 8px 0 6px 0; display: flex; flex-wrap: wrap; gap: 4px 0;
 }
-.summary-card-val {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 16px; font-weight: 500;
-  color: var(--text); margin-bottom: 2px;
+.pd-bar-row {
+  width: 100%; display: flex; align-items: center; gap: 6px;
+  padding: 3px 0;
 }
-.summary-card-sub { font-size: 11px; color: var(--text-dim); }
-.summary-card.best { border-color: rgba(78,201,160,0.25); }
-.summary-card.worst { border-color: rgba(224,75,74,0.2); }
+.pd-cat { font-size: 10px; color: var(--text-dim); min-width: 85px; text-transform: uppercase; letter-spacing: 0.06em; }
+.pd-bar-wrap { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.06); }
+.pd-bar { height: 100%; border-radius: 2px; }
+.pd-val { font-size: 10px; color: var(--text-dim); min-width: 24px; text-align: right; }
+
+.scards { display: flex; gap: 8px; margin-top: 12px; }
+@media (max-width: 400px) { .scards { flex-direction: column; } }
+.sc {
+  flex: 1; min-width: 0; background: var(--surface-raised);
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
+}
+.sc-l { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+.sc-v { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 1px; }
+.sc-s { font-size: 10px; color: var(--text-dim); }
+.sc.best { border-color: rgba(78,201,160,0.25); }
+.sc.worst { border-color: rgba(224,75,74,0.2); }
 
 footer {
-  text-align: center; margin-top: 2.5rem;
-  padding-top: 1.5rem; border-top: 1px solid var(--border);
+  text-align: center; margin-top: 2rem; padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
 }
-footer p {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic; font-size: 13px; color: var(--text-dim);
-}
+footer p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--text-dim); }
 footer a { color: var(--gold-dim); text-decoration: none; }
 footer a:hover { color: var(--gold); }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.category { animation: fadeUp 0.4s ease both; }
-.category:nth-child(1) { animation-delay: 0.05s; }
-.category:nth-child(2) { animation-delay: 0.1s; }
-.category:nth-child(3) { animation-delay: 0.15s; }
-.category:nth-child(4) { animation-delay: 0.2s; }
-.category:nth-child(5) { animation-delay: 0.25s; }
-.stats-block { animation: fadeUp 0.4s ease 0.35s both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.category { animation: fadeUp 0.35s ease both; }
+.category:nth-child(1){animation-delay:.03s} .category:nth-child(2){animation-delay:.06s}
+.category:nth-child(3){animation-delay:.09s} .category:nth-child(4){animation-delay:.12s}
+.category:nth-child(5){animation-delay:.15s}
+.stats { animation: fadeUp 0.35s ease 0.2s both; }
 </style>
 </head>
 <body>
-
 <div class="page">
   <header>
     <h1>Philosophical Profile Comparison</h1>
-    <p>how you actually think</p>
+    <p class="sub">how you actually think</p>
     <a class="take-quiz" href="https://diagnostic.millermanschool.com" target="_blank" rel="noopener">Take the quiz yourself</a>
   </header>
-  <div class="controls" id="controls"></div>
-  <div class="separator"></div>
-  <div id="categories"></div>
-  <div class="separator"></div>
-  <div class="stats-block" id="stats"></div>
-  <footer>
-    <p>Based on the <a href="https://diagnostic.millermanschool.com" target="_blank" rel="noopener">Millerman School diagnostic</a></p>
-  </footer>
+
+  <div class="controls" id="ctrls"></div>
+  <div class="view-toggle">
+    <button class="vtab active" data-v="tracks">Tracks</button>
+    <button class="vtab" data-v="table">Table</button>
+  </div>
+
+  <div id="tracks-view"></div>
+  <div id="table-view" style="display:none"></div>
+
+  <div class="sep"></div>
+  <div class="stats" id="stats"></div>
+
+  <footer><p>Based on the <a href="https://diagnostic.millermanschool.com" target="_blank" rel="noopener">Millerman School diagnostic</a></p></footer>
 </div>
 
 <script>
-const people = {
-  Hussein: { color: '#9b8fd4', scores: { metaphysics: 28, politics: 38, epistemology: 78, technology: 12, human_nature: 80 } },
-  Ricardo: { color: '#4ec9a0', scores: { metaphysics: 48, politics: 55, epistemology: 75, technology: 78, human_nature: 60 } },
-  Bilal:   { color: '#e07a4f', scores: { metaphysics: 55, politics: 5, epistemology: 35, technology: 50, human_nature: 82 } },
-  Dalia:   { color: '#d96b8f', scores: { metaphysics: 65, politics: 55, epistemology: 38, technology: 12, human_nature: 12 } }
+const P = {
+  Hussein:  { c:'#9b8fd4', s:{ m:28, p:38, e:78, t:12, h:80 } },
+  Ricardo:  { c:'#4ec9a0', s:{ m:48, p:55, e:75, t:78, h:60 } },
+  Bilal:    { c:'#e07a4f', s:{ m:55, p:5,  e:35, t:50, h:82 } },
+  Dalia:    { c:'#d96b8f', s:{ m:65, p:55, e:38, t:12, h:12 } },
+  Anthony:  { c:'#6cb4d9', s:{ m:55, p:28, e:75, t:12, h:12 } },
+  Elisa:    { c:'#b8a0d2', s:{ m:55, p:38, e:52, t:12, h:12 } },
+  Line:     { c:'#e8c95a', s:{ m:72, p:35, e:75, t:82, h:82 } }
 };
 
-const catKeys = ['metaphysics','politics','epistemology','technology','human_nature'];
-
-const categories = [
-  { key: 'metaphysics', name: 'Metaphysics', left: 'Platonist', right: 'Nietzschean' },
-  { key: 'politics', name: 'Politics', left: 'Classical', right: 'Liberal' },
-  { key: 'epistemology', name: 'Epistemology', left: 'Straussian', right: 'Hegelian' },
-  { key: 'technology', name: 'Technology', left: 'Heideggerian', right: 'Promethean' },
-  { key: 'human_nature', name: 'Human nature', left: 'Aristotelian', right: 'Existentialist' }
+const CK = ['m','p','e','t','h'];
+const cats = [
+  { k:'m', name:'Metaphysics', l:'Platonist', r:'Nietzschean' },
+  { k:'p', name:'Politics', l:'Classical', r:'Liberal' },
+  { k:'e', name:'Epistemology', l:'Straussian', r:'Hegelian' },
+  { k:'t', name:'Technology', l:'Heideggerian', r:'Promethean' },
+  { k:'h', name:'Human nature', l:'Aristotelian', r:'Existentialist' }
 ];
 
-const definitions = {
-  metaphysics: {
-    left: {
-      term: 'Platonist',
-      text: 'There\'s a fixed, higher reality beyond what we can see or touch \u2014 eternal truths, objective moral order, a "way things really are" that doesn\'t depend on human opinion.',
-      link: 'https://plato.stanford.edu/entries/plato-metaphysics/',
-      linkLabel: 'Stanford Encyclopedia: Plato\'s metaphysics'
-    },
-    right: {
-      term: 'Nietzschean',
-      text: 'There is no pre-given order or objective truth. "Reality" is something we impose through our will, creativity, and power. Values are made, not found.',
-      link: 'https://plato.stanford.edu/entries/nietzsche/',
-      linkLabel: 'Stanford Encyclopedia: Nietzsche'
-    }
+const defs = {
+  m: {
+    l: { t:'Platonist', d:'There\'s a fixed, higher reality beyond what we see \u2014 eternal truths and objective moral order that don\'t depend on human opinion.', u:'https://plato.stanford.edu/entries/plato-metaphysics/', ul:'Stanford: Plato\'s metaphysics' },
+    r: { t:'Nietzschean', d:'There is no pre-given order. "Reality" is something we impose through will and creativity. Values are made, not found.', u:'https://plato.stanford.edu/entries/nietzsche/', ul:'Stanford: Nietzsche' }
   },
-  politics: {
-    left: {
-      term: 'Classical',
-      text: 'Politics should be grounded in virtue, duty, and natural hierarchy. The purpose of the state is to cultivate good character, not just protect individual rights.',
-      link: 'https://plato.stanford.edu/entries/aristotle-politics/',
-      linkLabel: 'Stanford Encyclopedia: Aristotle\'s politics'
-    },
-    right: {
-      term: 'Liberal',
-      text: 'Individual freedom and equal rights come first. Government exists to protect personal liberty, and people should be free to define the good life for themselves.',
-      link: 'https://plato.stanford.edu/entries/liberalism/',
-      linkLabel: 'Stanford Encyclopedia: Liberalism'
-    }
+  p: {
+    l: { t:'Classical', d:'Politics should be grounded in virtue, duty, and natural hierarchy. The state\'s purpose is to cultivate good character, not just protect rights.', u:'https://plato.stanford.edu/entries/aristotle-politics/', ul:'Stanford: Aristotle\'s politics' },
+    r: { t:'Liberal', d:'Individual freedom and equal rights come first. People should be free to define the good life for themselves.', u:'https://plato.stanford.edu/entries/liberalism/', ul:'Stanford: Liberalism' }
   },
-  epistemology: {
-    left: {
-      term: 'Straussian',
-      text: 'The deepest truths are often hidden. Great thinkers wrote between the lines because some knowledge is dangerous or misunderstood by the public. Careful, close reading reveals what\'s really being said.',
-      link: 'https://plato.stanford.edu/entries/strauss-leo/',
-      linkLabel: 'Stanford Encyclopedia: Leo Strauss'
-    },
-    right: {
-      term: 'Hegelian',
-      text: 'Truth unfolds through history as a process of contradiction and resolution. No single perspective is complete \u2014 understanding grows as opposing ideas clash and synthesize over time.',
-      link: 'https://plato.stanford.edu/entries/hegel/',
-      linkLabel: 'Stanford Encyclopedia: Hegel'
-    }
+  e: {
+    l: { t:'Straussian', d:'The deepest truths are often hidden. Great thinkers wrote between the lines \u2014 careful, close reading reveals what\'s really being said.', u:'https://plato.stanford.edu/entries/strauss-leo/', ul:'Stanford: Leo Strauss' },
+    r: { t:'Hegelian', d:'Truth unfolds through history as contradiction and resolution. Understanding grows as opposing ideas clash and synthesize over time.', u:'https://plato.stanford.edu/entries/hegel/', ul:'Stanford: Hegel' }
   },
-  technology: {
-    left: {
-      term: 'Heideggerian',
-      text: 'Technology isn\'t neutral \u2014 it reshapes how we see the world, turning everything (including people) into resources to be optimized. We should be deeply cautious about what we lose in the process.',
-      link: 'https://plato.stanford.edu/entries/heidegger/',
-      linkLabel: 'Stanford Encyclopedia: Heidegger'
-    },
-    right: {
-      term: 'Promethean',
-      text: 'Technology is humanity\'s greatest tool for liberation. Like Prometheus bringing fire to mortals, our power to build and innovate is what makes us free and defines human progress.',
-      link: 'https://en.wikipedia.org/wiki/Prometheanism',
-      linkLabel: 'Wikipedia: Prometheanism'
-    }
+  t: {
+    l: { t:'Heideggerian', d:'Technology isn\'t neutral \u2014 it reshapes how we see the world, turning everything into resources to optimize. We should be deeply cautious about what we lose.', u:'https://plato.stanford.edu/entries/heidegger/', ul:'Stanford: Heidegger' },
+    r: { t:'Promethean', d:'Technology is humanity\'s greatest tool for liberation. Our power to build and innovate is what defines human progress.', u:'https://en.wikipedia.org/wiki/Prometheanism', ul:'Wikipedia: Prometheanism' }
   },
-  human_nature: {
-    left: {
-      term: 'Aristotelian',
-      text: 'Humans have a fixed nature with a built-in purpose. Flourishing means developing your natural capacities \u2014 reason, virtue, community \u2014 toward a definite idea of the good life.',
-      link: 'https://plato.stanford.edu/entries/aristotle-ethics/',
-      linkLabel: 'Stanford Encyclopedia: Aristotle\'s ethics'
-    },
-    right: {
-      term: 'Existentialist',
-      text: 'There is no preset human nature. You are what you make of yourself. Existence comes before essence \u2014 meaning isn\'t given, it\'s created through your choices and commitments.',
-      link: 'https://plato.stanford.edu/entries/existentialism/',
-      linkLabel: 'Stanford Encyclopedia: Existentialism'
-    }
+  h: {
+    l: { t:'Aristotelian', d:'Humans have a fixed nature with a built-in purpose. Flourishing means developing reason, virtue, and community toward a definite good life.', u:'https://plato.stanford.edu/entries/aristotle-ethics/', ul:'Stanford: Aristotle\'s ethics' },
+    r: { t:'Existentialist', d:'There is no preset human nature. Existence precedes essence \u2014 meaning isn\'t given, it\'s created through your choices.', u:'https://plato.stanford.edu/entries/existentialism/', ul:'Stanford: Existentialism' }
   }
 };
 
-const names = Object.keys(people);
+const names = Object.keys(P);
 const active = new Set(names);
-let touchedMarker = null;
-const openPanels = new Set();
+let touchedMk = null;
+const openDefs = new Set();
+const openPairs = new Set();
+let currentView = 'tracks';
 
-function pairDist(a, b) {
-  let sum = 0;
-  catKeys.forEach(k => sum += Math.abs(people[a].scores[k] - people[b].scores[k]));
-  return sum;
+function leanLabel(v, cat) { return v < 40 ? cat.l : v > 60 ? cat.r : 'Center'; }
+function leanClass(v) { return v < 30 || v > 70 ? 'lean-strong' : v < 40 || v > 60 ? 'lean-mod' : 'lean-center'; }
+
+function dist(a, b) {
+  let s = 0; CK.forEach(k => s += Math.abs(P[a].s[k] - P[b].s[k])); return s;
 }
+function catDist(a, b, k) { return Math.abs(P[a].s[k] - P[b].s[k]); }
 
 function render() {
-  const controlsEl = document.getElementById('controls');
-  controlsEl.innerHTML = '';
-  names.forEach(name => {
-    const btn = document.createElement('button');
-    btn.className = 'person-btn' + (active.has(name) ? ' active' : '');
-    btn.style.setProperty('--person-color', people[name].color);
-    btn.innerHTML = '<span class="dot" style="background:' + people[name].color + '"></span>' + name;
-    btn.addEventListener('click', () => { active.has(name) ? active.delete(name) : active.add(name); render(); });
-    controlsEl.appendChild(btn);
+  // Controls
+  const ce = document.getElementById('ctrls');
+  ce.innerHTML = '';
+  names.forEach(n => {
+    const b = document.createElement('button');
+    b.className = 'pbtn' + (active.has(n) ? ' active' : '');
+    b.style.setProperty('--pc', P[n].c);
+    b.innerHTML = '<span class="d" style="background:'+P[n].c+'"></span>' + n;
+    b.onclick = () => { active.has(n) ? active.delete(n) : active.add(n); render(); };
+    ce.appendChild(b);
   });
 
-  const catEl = document.getElementById('categories');
-  catEl.innerHTML = '';
-
-  categories.forEach(cat => {
-    const activeNames = [...active];
-    const scores = activeNames.map(n => ({ name: n, val: people[n].scores[cat.key] }));
-    scores.sort((a, b) => a.val - b.val);
-
-    const THRESHOLD = 6;
-    const offsets = {};
-    for (let i = 0; i < scores.length; i++) {
-      let cluster = [scores[i]];
-      while (i + 1 < scores.length && Math.abs(scores[i + 1].val - scores[i].val) < THRESHOLD) { i++; cluster.push(scores[i]); }
-      if (cluster.length === 1) { offsets[cluster[0].name] = 0; }
-      else {
-        const step = 20;
-        const start = -step * (cluster.length - 1) / 2;
-        cluster.forEach((c, idx) => offsets[c.name] = start + idx * step);
-      }
-    }
-
-    const activePoles = activeNames.map(n => people[n].scores[cat.key]);
-    const anyLeft = activePoles.some(v => v < 40);
-    const anyRight = activePoles.some(v => v > 60);
-
-    const def = definitions[cat.key];
-    const panelId = 'def-' + cat.key;
-    const isOpen = openPanels.has(cat.key);
-
-    const div = document.createElement('div');
-    div.className = 'category';
-    div.innerHTML =
-      '<div class="cat-label">' + cat.name +
-        '<button class="info-btn' + (isOpen ? ' active' : '') + '" data-cat="' + cat.key + '" aria-label="Show definitions">?</button>' +
-      '</div>' +
-      '<div class="cat-poles">' +
-        '<span class="pole' + (anyLeft ? ' bold' : '') + '">' + cat.left + '</span>' +
-        '<span class="pole' + (anyRight ? ' bold' : '') + '">' + cat.right + '</span>' +
-      '</div>' +
-      '<div class="track-wrap"><div class="track-line"></div></div>' +
-      '<div class="track-labels"></div>' +
-      '<div class="def-panel' + (isOpen ? ' open' : '') + '" id="' + panelId + '">' +
-        '<div class="def-inner">' +
-          '<div class="def-row">' +
-            '<div class="def-term">' + def.left.term + '</div>' +
-            '<div class="def-text">' + def.left.text + '</div>' +
-            '<a class="def-link" href="' + def.left.link + '" target="_blank" rel="noopener">' + def.left.linkLabel + '</a>' +
-          '</div>' +
-          '<div class="def-vs">vs</div>' +
-          '<div class="def-row">' +
-            '<div class="def-term">' + def.right.term + '</div>' +
-            '<div class="def-text">' + def.right.text + '</div>' +
-            '<a class="def-link" href="' + def.right.link + '" target="_blank" rel="noopener">' + def.right.linkLabel + '</a>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
-
-    catEl.appendChild(div);
-
-    // Info button toggle
-    div.querySelector('.info-btn').addEventListener('click', function() {
-      const key = this.dataset.cat;
-      if (openPanels.has(key)) openPanels.delete(key); else openPanels.add(key);
-      const panel = document.getElementById('def-' + key);
-      panel.classList.toggle('open');
-      this.classList.toggle('active');
-    });
-
-    const track = div.querySelector('.track-wrap');
-    const labelsRow = div.querySelector('.track-labels');
-
-    names.forEach(name => {
-      const data = people[name];
-      const isActive = active.has(name);
-      const m = document.createElement('div');
-      m.className = 'marker' + (isActive ? '' : ' hidden');
-      m.style.left = data.scores[cat.key] + '%';
-      m.style.background = data.color;
-      m.style.borderColor = data.color;
-      const yOff = isActive ? (offsets[name] || 0) : 0;
-      m.style.transform = 'translate(-50%, calc(-50% + ' + yOff + 'px))';
-
-      const leanLabel = data.scores[cat.key] < 40 ? cat.left : data.scores[cat.key] > 60 ? cat.right : 'Center';
-      const tip = document.createElement('div');
-      tip.className = 'tip';
-      tip.textContent = name + ' \u2014 ' + leanLabel;
-      const pct = data.scores[cat.key];
-      if (pct < 15) tip.classList.add('nudge-right');
-      else if (pct > 85) tip.classList.add('nudge-left');
-      m.appendChild(tip);
-
-      m.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        if (touchedMarker && touchedMarker !== m) touchedMarker.classList.remove('touched');
-        m.classList.toggle('touched');
-        touchedMarker = m.classList.contains('touched') ? m : null;
-      }, { passive: false });
-
-      track.appendChild(m);
-
-      if (isActive) {
-        const lbl = document.createElement('div');
-        lbl.className = 'track-label';
-        lbl.innerHTML = '<span class="tl-dot" style="background:' + data.color + '"></span><span class="tl-name">' + name + ': ' + leanLabel + '</span>';
-        labelsRow.appendChild(lbl);
-      }
-    });
-  });
-
+  renderTracks();
+  renderTable();
   renderStats();
 }
 
-document.addEventListener('touchstart', function(e) {
-  if (touchedMarker && !touchedMarker.contains(e.target)) {
-    touchedMarker.classList.remove('touched');
-    touchedMarker = null;
-  }
-});
+function renderTracks() {
+  const el = document.getElementById('tracks-view');
+  el.innerHTML = '';
+  cats.forEach(cat => {
+    const an = [...active];
+    const scores = an.map(n => ({ n, v: P[n].s[cat.k] })).sort((a,b) => a.v - b.v);
+
+    const TH = 5, offsets = {};
+    for (let i = 0; i < scores.length; i++) {
+      let cl = [scores[i]];
+      while (i+1 < scores.length && Math.abs(scores[i+1].v - scores[i].v) < TH) { i++; cl.push(scores[i]); }
+      if (cl.length === 1) offsets[cl[0].n] = 0;
+      else { const st = 18, s = -st*(cl.length-1)/2; cl.forEach((c,j) => offsets[c.n] = s + j*st); }
+    }
+
+    const ap = an.map(n => P[n].s[cat.k]);
+    const aL = ap.some(v => v < 40), aR = ap.some(v => v > 60);
+    const df = defs[cat.k], isO = openDefs.has(cat.k);
+
+    const d = document.createElement('div');
+    d.className = 'category';
+    d.innerHTML =
+      '<div class="cat-label">'+cat.name+'<button class="ibtn'+(isO?' active':'')+'" data-c="'+cat.k+'">?</button></div>'+
+      '<div class="cat-poles"><span class="pole'+(aL?' bold':'')+'">'+cat.l+'</span><span class="pole'+(aR?' bold':'')+'">'+cat.r+'</span></div>'+
+      '<div class="tw"><div class="tl"></div></div>'+
+      '<div class="tlabels"></div>'+
+      '<div class="dp'+(isO?' open':'')+'" id="dp-'+cat.k+'"><div class="di">'+
+        '<div class="dr"><div class="dt">'+df.l.t+'</div><div class="dd">'+df.l.d+'</div><a class="dl" href="'+df.l.u+'" target="_blank" rel="noopener">'+df.l.ul+'</a></div>'+
+        '<div class="dvs">vs</div>'+
+        '<div class="dr"><div class="dt">'+df.r.t+'</div><div class="dd">'+df.r.d+'</div><a class="dl" href="'+df.r.u+'" target="_blank" rel="noopener">'+df.r.ul+'</a></div>'+
+      '</div></div>';
+    el.appendChild(d);
+
+    d.querySelector('.ibtn').onclick = function() {
+      const k = this.dataset.c;
+      openDefs.has(k) ? openDefs.delete(k) : openDefs.add(k);
+      document.getElementById('dp-'+k).classList.toggle('open');
+      this.classList.toggle('active');
+    };
+
+    const tw = d.querySelector('.tw'), tl = d.querySelector('.tlabels');
+    names.forEach(n => {
+      const ia = active.has(n), m = document.createElement('div');
+      m.className = 'mk'+(ia?'':' hid');
+      m.style.left = P[n].s[cat.k]+'%';
+      m.style.background = P[n].c; m.style.borderColor = P[n].c;
+      const yo = ia ? (offsets[n]||0) : 0;
+      m.style.transform = 'translate(-50%,calc(-50% + '+yo+'px))';
+      const ll = leanLabel(P[n].s[cat.k], cat);
+      const tp = document.createElement('div'); tp.className = 'tp'; tp.textContent = n+' \u2014 '+ll;
+      const pct = P[n].s[cat.k];
+      if (pct < 12) tp.classList.add('nr'); else if (pct > 88) tp.classList.add('nl');
+      m.appendChild(tp);
+      m.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (touchedMk && touchedMk !== m) touchedMk.classList.remove('touched');
+        m.classList.toggle('touched');
+        touchedMk = m.classList.contains('touched') ? m : null;
+      }, {passive:false});
+      tw.appendChild(m);
+      if (ia) {
+        const lb = document.createElement('div'); lb.className = 'tlbl';
+        lb.innerHTML = '<span class="td" style="background:'+P[n].c+'"></span><span>'+n+': '+ll+'</span>';
+        tl.appendChild(lb);
+      }
+    });
+  });
+}
+
+function renderTable() {
+  const el = document.getElementById('table-view');
+  const an = [...active];
+  if (an.length === 0) { el.innerHTML = '<p style="font-size:13px;color:var(--text-dim);text-align:center;">Select at least 1 person.</p>'; return; }
+
+  let h = '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Person</th>';
+  cats.forEach(c => h += '<th>'+c.name+'</th>');
+  h += '</tr></thead><tbody>';
+  an.forEach(n => {
+    h += '<tr><td><div class="name-cell"><span class="cd" style="background:'+P[n].c+'"></span>'+n+'</div></td>';
+    cats.forEach(c => {
+      const v = P[n].s[c.k], ll = leanLabel(v, c), lc = leanClass(v);
+      h += '<td class="lean '+lc+'">'+ll+'</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table></div>';
+  el.innerHTML = h;
+}
 
 function renderStats() {
   const el = document.getElementById('stats');
-  const activeNames = [...active];
-  if (activeNames.length < 2) {
-    el.innerHTML = '<div class="stats-title">Compatibility</div><div style="font-size:13px;color:var(--text-dim);">Select at least 2 people.</div>';
+  const an = [...active];
+  if (an.length < 2) {
+    el.innerHTML = '<div class="section-title">Compatibility</div><p style="font-size:12px;color:var(--text-dim);">Select at least 2 people.</p>';
     return;
   }
 
   const pairs = [];
-  for (let i = 0; i < activeNames.length; i++)
-    for (let j = i + 1; j < activeNames.length; j++)
-      pairs.push({ a: activeNames[i], b: activeNames[j], dist: pairDist(activeNames[i], activeNames[j]) });
-  pairs.sort((x, y) => x.dist - y.dist);
+  for (let i = 0; i < an.length; i++)
+    for (let j = i+1; j < an.length; j++)
+      pairs.push({ a:an[i], b:an[j], d:dist(an[i],an[j]) });
+  pairs.sort((x,y) => x.d - y.d);
 
-  const best = pairs[0], worst = pairs[pairs.length - 1];
+  const best = pairs[0], worst = pairs[pairs.length-1];
 
-  function catExtremes(a, b) {
-    let maxD = 0, maxC = '', minD = 999, minC = '';
-    categories.forEach(c => {
-      const d = Math.abs(people[a].scores[c.key] - people[b].scores[c.key]);
-      if (d > maxD) { maxD = d; maxC = c.name; }
-      if (d < minD) { minD = d; minC = c.name; }
-    });
-    return { diverge: maxC, align: minC };
+  function extremes(a,b) {
+    let xD=0,xC='',nD=999,nC='';
+    cats.forEach(c => { const d=catDist(a,b,c.k); if(d>xD){xD=d;xC=c.name;} if(d<nD){nD=d;nC=c.name;} });
+    return {div:xC, al:nC};
   }
 
-  let html = '<div class="stats-title">Compatibility ranking</div>';
-  pairs.forEach(p => {
-    const compat = Math.round(100 - (p.dist / 500) * 100);
-    const barColor = compat > 70 ? '#4ec9a0' : compat > 45 ? '#c9a84c' : '#e24b4a';
-    html += '<div class="pair-row">' +
-      '<span class="pair-names">' + p.a + ' & ' + p.b + '</span>' +
-      '<div class="pair-bar-wrap"><div class="pair-bar" style="width:' + compat + '%;background:' + barColor + ';"></div></div>' +
-      '<span class="pair-score">' + compat + '%</span></div>';
+  let h = '<div class="section-title">Compatibility ranking</div><p style="font-size:11px;color:var(--text-dim);margin:-8px 0 12px;">Tap a pair to see per-category breakdown</p>';
+  pairs.forEach((p,i) => {
+    const compat = Math.round(100 - (p.d/500)*100);
+    const bc = compat > 70 ? '#4ec9a0' : compat > 45 ? '#c9a84c' : '#e24b4a';
+    const pid = p.a+'-'+p.b;
+    const isOpen = openPairs.has(pid);
+
+    h += '<div class="pr" data-pid="'+pid+'">' +
+      '<span class="pn">'+p.a+' & '+p.b+'</span>' +
+      '<div class="pbw"><div class="pb" style="width:'+compat+'%;background:'+bc+';"></div></div>' +
+      '<span class="ps">'+compat+'%</span></div>';
+
+    h += '<div class="pair-detail'+(isOpen?' open':'')+'" id="pd-'+pid+'"><div class="pd-inner">';
+    cats.forEach(c => {
+      const cd = catDist(p.a, p.b, c.k);
+      const catCompat = Math.round(100 - cd);
+      const cbc = catCompat > 70 ? '#4ec9a0' : catCompat > 45 ? '#c9a84c' : '#e24b4a';
+      h += '<div class="pd-bar-row">' +
+        '<span class="pd-cat">'+c.name+'</span>' +
+        '<div class="pd-bar-wrap"><div class="pd-bar" style="width:'+catCompat+'%;background:'+cbc+';"></div></div>' +
+        '<span class="pd-val">'+catCompat+'%</span></div>';
+    });
+    h += '</div></div>';
   });
 
-  const bestEx = catExtremes(best.a, best.b);
-  const worstEx = catExtremes(worst.a, worst.b);
+  const be = extremes(best.a, best.b), we = extremes(worst.a, worst.b);
+  h += '<div class="scards">' +
+    '<div class="sc best"><div class="sc-l">Most compatible</div><div class="sc-v">'+best.a+' & '+best.b+'</div><div class="sc-s">Closest on '+be.al+'</div></div>' +
+    '<div class="sc worst"><div class="sc-l">Most opposed</div><div class="sc-v">'+worst.a+' & '+worst.b+'</div><div class="sc-s">Diverge on '+we.div+'</div></div></div>';
 
-  html += '<div class="summary-cards">' +
-    '<div class="summary-card best"><div class="summary-card-label">Most compatible</div>' +
-    '<div class="summary-card-val">' + best.a + ' & ' + best.b + '</div>' +
-    '<div class="summary-card-sub">Closest on ' + bestEx.align + '</div></div>' +
-    '<div class="summary-card worst"><div class="summary-card-label">Most opposed</div>' +
-    '<div class="summary-card-val">' + worst.a + ' & ' + worst.b + '</div>' +
-    '<div class="summary-card-sub">Diverge on ' + worstEx.diverge + '</div></div></div>';
+  el.innerHTML = h;
 
-  el.innerHTML = html;
+  // Pair row click handlers
+  el.querySelectorAll('.pr').forEach(row => {
+    row.addEventListener('click', function() {
+      const pid = this.dataset.pid;
+      const detail = document.getElementById('pd-'+pid);
+      if (openPairs.has(pid)) { openPairs.delete(pid); detail.classList.remove('open'); }
+      else { openPairs.add(pid); detail.classList.add('open'); }
+    });
+  });
 }
+
+// View toggle
+document.querySelectorAll('.vtab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.vtab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    currentView = this.dataset.v;
+    document.getElementById('tracks-view').style.display = currentView === 'tracks' ? '' : 'none';
+    document.getElementById('table-view').style.display = currentView === 'table' ? '' : 'none';
+  });
+});
+
+document.addEventListener('touchstart', function(e) {
+  if (touchedMk && !touchedMk.contains(e.target)) { touchedMk.classList.remove('touched'); touchedMk = null; }
+});
 
 render();
 </script>
